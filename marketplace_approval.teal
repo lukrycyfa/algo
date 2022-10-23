@@ -2,17 +2,101 @@
 txn ApplicationID
 int 0
 ==
-bnz main_l8
+bnz main_l16
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l7
+bnz main_l15
 txna ApplicationArgs 0
 byte "buy"
 ==
-bnz main_l4
+bnz main_l12
+txna ApplicationArgs 0
+byte "update"
+==
+bnz main_l9
+txna ApplicationArgs 0
+byte "archive"
+==
+bnz main_l8
+txna ApplicationArgs 0
+byte "unarchive"
+==
+bnz main_l7
 err
-main_l4:
+main_l7:
+txn NumAppArgs
+int 1
+==
+assert
+txn Note
+byte "next-softtech:nxt5"
+==
+assert
+byte "ARCHIVED"
+int 0
+app_global_put
+int 1
+return
+main_l8:
+txn NumAppArgs
+int 1
+==
+assert
+txn Note
+byte "next-softtech:nxt5"
+==
+assert
+byte "ARCHIVED"
+int 1
+app_global_put
+int 1
+return
+main_l9:
+txn Sender
+global CreatorAddress
+==
+txn NumAppArgs
+int 6
+==
+txn Note
+byte "next-softtech:nxt5"
+==
+&&
+txna ApplicationArgs 4
+btoi
+int 0
+>
+&&
+&&
+bnz main_l11
+int 0
+return
+main_l11:
+byte "NAME"
+txna ApplicationArgs 1
+app_global_put
+byte "IMAGE"
+txna ApplicationArgs 2
+app_global_put
+byte "DESCRIPTION"
+txna ApplicationArgs 3
+app_global_put
+byte "PRICE"
+txna ApplicationArgs 4
+btoi
+app_global_put
+byte "ARCHIVED"
+txna ApplicationArgs 5
+btoi
+app_global_put
+byte "SOLD"
+byte "SOLD"
+app_global_get
+app_global_put
+int 1
+return
+main_l12:
 global GroupSize
 int 2
 ==
@@ -36,10 +120,10 @@ gtxn 0 Sender
 ==
 &&
 &&
-bnz main_l6
+bnz main_l14
 int 0
 return
-main_l6:
+main_l14:
 byte "SOLD"
 byte "SOLD"
 app_global_get
@@ -49,18 +133,18 @@ btoi
 app_global_put
 int 1
 return
-main_l7:
+main_l15:
 txn Sender
 global CreatorAddress
 ==
 return
-main_l8:
+main_l16:
 txn NumAppArgs
 int 4
 ==
 assert
 txn Note
-byte "tutorial-marketplace:uv1"
+byte "next-softtech:nxt5"
 ==
 assert
 txna ApplicationArgs 3
@@ -82,6 +166,9 @@ txna ApplicationArgs 3
 btoi
 app_global_put
 byte "SOLD"
+int 0
+app_global_put
+byte "ARCHIVED"
 int 0
 app_global_put
 int 1
